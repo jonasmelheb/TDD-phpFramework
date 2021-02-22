@@ -5,14 +5,19 @@ use Twitter\Controller\HelloController;
 
 class exampleTest extends TestCase
 {
+    protected $HelloController;
+
+    protected function setUp(): void
+    {
+        $this->HelloController = new HelloController;
+    }
 
     /**@test */
     public function test_homepage_says_hello()
     {
         $_GET['name'] = 'Younes';
 
-        $controller = new \Twitter\Controller\HelloController;
-        $response = $controller->hello();
+        $response = $this->HelloController->hello();
 
         $this->assertEquals("Hello Younes", $response->getContent());
 
@@ -27,8 +32,7 @@ class exampleTest extends TestCase
     {
         $_GET = [];
 
-        $controller = new HelloController;
-        $response = $controller->hello();
+        $response = $this->HelloController->hello();
 
         $this->assertEquals("Hello tout le monde", $response->getContent());
     }
