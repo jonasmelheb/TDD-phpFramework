@@ -4,11 +4,11 @@ namespace Twitter\Controller;
 
 use Twitter\Http\Response;
 
-class HelloController 
+class HelloController
 {
-    public function hello() : Response
+    public function hello(): Response
     {
-        $name = $_GET['name'];
+        $name = $_GET['name'] ?? "tout le monde";
 
         return new Response("Hello $name");
     }
