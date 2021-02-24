@@ -20,10 +20,8 @@ class TweetController
 
     public function store(): Response
     {
-        foreach ($this->requiredFields as $field) {
-            if (empty($_POST[$field])) {
-                return new Response("Le champ $field est requis", 400);
-            }
+        if ($response = $this->validateFields()) {
+            return  $response;
         }
 
         $this->model->save($_POST['author'], $_POST['content']);
@@ -31,5 +29,30 @@ class TweetController
         return new Response('', 302, [
             "location" => "/"
         ]);
+    }
+
+    protected function validateFields(): ?Response
+    {
+        $invalidField = [];
+
+        foreach ($this->requiredFields as $field) {
+            if (empty($_POST[$field])) {
+                $invalidField[] = $field;
+            }
+        }
+
+        if (empty($invalidField)) {
+            return null;
+        }
+
+        if (count($invalidField) === 1) {
+            $field = $invalidField[0];
+            return new Response("Le champ $field est requis", 400);
+        }
+
+        return new Response(
+            sprintf('Les champs %s sont requis', implode(' et ', $invalidField)),
+            400
+        );
     }
 }

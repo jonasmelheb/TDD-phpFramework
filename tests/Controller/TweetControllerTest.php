@@ -53,10 +53,13 @@ class TweetControllerTest extends TestCase
         $this->assertEquals('Mon premier tweet', $data['content']);
     }
 
-    /**@test */
-    public function test_it_cant_save_a_tweet_if_post_author_empty()
+    /**
+     * @test
+     * @dataProvider missingFieldsProvider 
+     */
+    public function test_it_cant_save_a_tweet_if_fields_is_empty($postData, $errorMessage)
     {
-        $_POST['content'] = 'tweet test';
+        $_POST = $postData;
 
         $response = $this->controller->store();
 
@@ -64,20 +67,24 @@ class TweetControllerTest extends TestCase
         $this->assertEquals(400, $response->getStatus());
 
         // Vérification du content
-        $this->assertEquals('Le champ author est requis', $response->getContent());
+        $this->assertEquals($errorMessage, $response->getContent());
     }
 
-    /**@test */
-    public function test_it_cant_save_a_tweet_if_post_content_empty()
+    public function missingFieldsProvider()
     {
-        $_POST['author'] = 'Younes';
-
-        $response = $this->controller->store();
-
-        // Vérification du code status
-        $this->assertEquals(400, $response->getStatus());
-
-        // Vérification du content
-        $this->assertEquals('Le champ content est requis', $response->getContent());
+        return [
+            [
+                ['content' => 'test a tweet'],
+                "Le champ author est requis"
+            ],
+            [
+                ['author' => 'test a tweet'],
+                "Le champ content est requis"
+            ],
+            [
+                [],
+                "Les champs author et content sont requis"
+            ]
+        ];
     }
 }
